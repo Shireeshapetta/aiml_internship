@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Risk Score Calculator</title>
+
+    <style>
+
+        body {
+            font-family: Arial;
+            background-color: #f2f2f2;
+            padding: 40px;
+        }
+
+        .container {
+            width: 400px;
+            background: white;
+            padding: 20px;
+            margin: auto;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px gray;
+        }
+
+        h2 {
+            text-align: center;
+        }
+
+        label {
+            font-weight: bold;
+        }
+
+        select, input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 8px;
+            margin-bottom: 15px;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background: black;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        .output {
+            margin-top: 20px;
+            padding: 15px;
+            background: #eeeeee;
+            border-radius: 8px;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h2>Risk Score Calculator</h2>
+
+    <label>Violation Type</label>
+
+    <select id="type">
+        <option value="phone">Phone</option>
+        <option value="tab_switch">Tab Switch</option>
+        <option value="multiple_faces">Multiple Faces</option>
+    </select>
+
+    <label>Severity (0 to 1)</label>
+
+    <input type="number" id="severity" min="0" max="1" step="0.1">
+
+    <button onclick="calculateRisk()">
+        Calculate Risk
+    </button>
+
+    <div class="output" id="output">
+        Result will appear here
+    </div>
+
+</div>
+
+<script>
+
+async function calculateRisk() {
+
+    const type = document.getElementById("type").value;
+
+    const severity = parseFloat(
+        document.getElementById("severity").value
+    );
+
+    const response = await fetch('/calculate_risk', {
+
+        method: 'POST',
+
+        headers: {
+            'Content-Type': 'application/json'
+        },
+
+        body: JSON.stringify({
+
+            violations: [
+                {
+                    type: type,
+                    severity: severity
+                }
+            ]
+        })
+    });
+
+    const data = await response.json();
+
+    document.getElementById("output").innerHTML = `
+        <h3>Risk Score: ${data.risk_score}</h3>
+        <h3>Status: ${data.status}</h3>
+    `;
+}
+
+</script>
+
+</body>
+</html>
